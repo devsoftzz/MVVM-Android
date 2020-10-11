@@ -2,11 +2,16 @@ package com.demo.mvvm;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.SearchView;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.demo.mvvm.adapters.OnRecipeListener;
+import com.demo.mvvm.adapters.RecipeRecyclerAdapter;
 import com.demo.mvvm.models.Recipe;
 import com.demo.mvvm.requests.Api;
 import com.demo.mvvm.requests.ServiceGenerator;
@@ -22,24 +27,51 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ListActivity extends BaseActivity {
+public class ListActivity extends BaseActivity implements OnRecipeListener {
 
     private static final String TAG = "ListActivity";
 
     private ListViewModel mListViewModel;
+    private RecyclerView mRecyclerView;
+    private RecipeRecyclerAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
+        mRecyclerView = findViewById(R.id.recipe_list);
         mListViewModel = new ViewModelProvider(this).get(ListViewModel.class);
+
+        initRecyclerView();
+        initSearchView();
         subscribeObservers();
 
-        searchRecipeApi("pizza",1);
-
+        //searchRecipeApi("pizza",1);
         //testRetrofitSearchRequest();
         //testRetrofitRequest();
+    }
+
+    private void initRecyclerView(){
+        mAdapter = new RecipeRecyclerAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void initSearchView(){
+        final SearchView searchView = findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchRecipeApi(query,1);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
     private void subscribeObservers(){
@@ -47,9 +79,7 @@ public class ListActivity extends BaseActivity {
             @Override
             public void onChanged(List<Recipe> recipes) {
                 if(recipes != null){
-                    for(Recipe r : recipes){
-                        Log.d(TAG, "onChanged: "+ r.getTitle());
-                    }
+                    mAdapter.setRecipes(recipes);
                 }
             }
         });
@@ -116,4 +146,13 @@ public class ListActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public void onRecipeClick(int position) {
+
+    }
+
+    @Override
+    public void onCategoryClick(String category) {
+
+    }
 }
