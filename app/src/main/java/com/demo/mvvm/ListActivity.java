@@ -47,6 +47,10 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
         initSearchView();
         subscribeObservers();
 
+        if(!mListViewModel.isViewingRecipes()){
+            displaySearchCategories();
+        }
+
         //searchRecipeApi("pizza",1);
         //testRetrofitSearchRequest();
         //testRetrofitRequest();
@@ -86,6 +90,7 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
     }
 
     private void searchRecipeApi(String query, int pageNumber) {
+        mAdapter.displayLoading();
         mListViewModel.searchRecipeApi(query, pageNumber);
     }
 
@@ -153,6 +158,11 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
 
     @Override
     public void onCategoryClick(String category) {
+        searchRecipeApi(category,1);
+    }
 
+    private void displaySearchCategories(){
+        mListViewModel.setIsViewingRecipes(false);
+        mAdapter.displaySearchCategories();
     }
 }
