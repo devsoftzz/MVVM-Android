@@ -70,6 +70,16 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(itemDecorator);
         mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(!mRecyclerView.canScrollVertically(1)){
+                    mListViewModel.searchNextPage();
+                }
+            }
+        });
     }
 
     private void initSearchView() {

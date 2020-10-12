@@ -30,6 +30,12 @@ public class ListViewModel extends ViewModel {
         mRecipeRepository.searchRecipeApi(query, pageNumber);
     }
 
+    public void searchNextPage(){
+        if(!mIsPerformingQuery && mIsViewingRecipes){
+            mRecipeRepository.searchNextPage();
+        }
+    }
+
     public boolean isViewingRecipes() {
         return mIsViewingRecipes;
     }
