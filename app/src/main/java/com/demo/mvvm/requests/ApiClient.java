@@ -43,7 +43,7 @@ public class ApiClient {
     }
 
     public void searchRecipesApi(String query, int pageNumber) {
-        if(mRetrieveRecipesRunnable != null){
+        if (mRetrieveRecipesRunnable != null) {
             mRetrieveRecipesRunnable = null;
         }
         mRetrieveRecipesRunnable = new RetrieveRecipesRunnable(query, pageNumber);
@@ -78,16 +78,16 @@ public class ApiClient {
                 if (cancelRequest) {
                     return;
                 }
-                if(response.code() == 200){
-                    List<Recipe> list = new ArrayList<>(((RecipeSearchResponse)response.body()).getRecipes());
-                    if(pageNumber==1){
+                if (response.code() == 200) {
+                    List<Recipe> list = new ArrayList<>(((RecipeSearchResponse) response.body()).getRecipes());
+                    if (pageNumber == 1) {
                         mRecipes.postValue(list);
-                    }else {
+                    } else {
                         List<Recipe> current = mRecipes.getValue();
                         current.addAll(list);
                         mRecipes.postValue(current);
                     }
-                }else{
+                } else {
                     String error = response.errorBody().string();
                     Log.e(TAG, "run: " + error);
                     mRecipes.postValue(null);
@@ -109,6 +109,12 @@ public class ApiClient {
         private void cancelRequest() {
             Log.d(TAG, "cancelRequest: canceling the search request");
             cancelRequest = true;
+        }
+    }
+
+    public void cancelRequest() {
+        if (mRetrieveRecipesRunnable != null) {
+            mRetrieveRecipesRunnable.cancelRequest();
         }
     }
 }
