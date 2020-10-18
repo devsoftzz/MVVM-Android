@@ -1,5 +1,6 @@
 package com.demo.mvvm;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -75,7 +76,7 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(!mRecyclerView.canScrollVertically(1)){
+                if (!mRecyclerView.canScrollVertically(1)) {
                     mListViewModel.searchNextPage();
                 }
             }
@@ -175,7 +176,9 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
 
     @Override
     public void onRecipeClick(int position) {
-
+        Intent intent = new Intent(this, RecipeActivity.class);
+        intent.putExtra("recipe", mAdapter.getSelectedRecipe(position));
+        startActivity(intent);
     }
 
     @Override
