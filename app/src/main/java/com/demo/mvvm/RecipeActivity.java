@@ -43,6 +43,7 @@ public class RecipeActivity extends BaseActivity {
         showProgressBar(true);
         subscribeObserver();
         getIncomingIntent();
+
     }
 
     private void getIncomingIntent() {
@@ -57,12 +58,47 @@ public class RecipeActivity extends BaseActivity {
             @Override
             public void onChanged(Recipe recipe) {
                 if (recipe != null) {
-                    if(recipe.getRecipe_id().equals(mRecipeViewModel.getRecipeId())) {
+                    if (recipe.getRecipe_id().equals(mRecipeViewModel.getRecipeId())) {
                         setRecipeProperties(recipe);
+                        mRecipeViewModel.setRetrievedRecipe(true);
                     }
                 }
             }
         });
+
+        mRecipeViewModel.isRecipeTimeOut().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean && !mRecipeViewModel.didRetrievedRecipe()) {
+                    showErrorScreen("Error retrieving data. Check network connection.");
+                }
+            }
+        });
+    }
+
+    private void showErrorScreen(String errorMessage) {
+        mRecipeTitle.setText("Error retrieving recipe...");
+        mRecipeRank.setText("");
+        mRecipeIngredientsContainer.removeAllViews();
+        TextView textView = new TextView(this);
+        if (errorMessage.equals("")) {
+            errorMessage = "Error";
+        }
+        textView.setText(errorMessage);
+        textView.setTextSize(15);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mRecipeIngredientsContainer.addView(textView);
+
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.drawable.ic_launcher_background);
+
+        Glide.with(this)
+                .setDefaultRequestOptions(requestOptions)
+                .load(R.drawable.ic_launcher_background)
+                .into(mRecipeImage);
+
+        showParent();
+        showProgressBar(false);
     }
 
     private void setRecipeProperties(Recipe recipe) {
@@ -86,9 +122,9 @@ public class RecipeActivity extends BaseActivity {
                 textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 mRecipeIngredientsContainer.addView(textView);
             }
-            showParent();
-            showProgressBar(false);
         }
+        showParent();
+        showProgressBar(false);
     }
 
     private void showParent() {

@@ -109,6 +109,15 @@ public class ListActivity extends BaseActivity implements OnRecipeListener {
                 }
             }
         });
+
+        mListViewModel.isQueryExhausted().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    mAdapter.setQueryExhausted();
+                }
+            }
+        });
     }
 
     private void searchRecipeApi(String query, int pageNumber) {

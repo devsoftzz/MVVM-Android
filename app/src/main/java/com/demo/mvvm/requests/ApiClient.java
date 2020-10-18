@@ -31,6 +31,8 @@ public class ApiClient {
     private MutableLiveData<Recipe> mRecipe;
     private RetrieveRecipeRunnable mRetrieveRecipeRunnable;
 
+    private MutableLiveData<Boolean> mRecipeTimeOut;
+
     public static ApiClient getInstance() {
         if (instance == null) {
             instance = new ApiClient();
@@ -41,6 +43,7 @@ public class ApiClient {
     private ApiClient() {
         mRecipes = new MutableLiveData<>();
         mRecipe = new MutableLiveData<>();
+        mRecipeTimeOut = new MutableLiveData<>();
     }
 
     public LiveData<List<Recipe>> getRecipes() {
@@ -49,6 +52,10 @@ public class ApiClient {
 
     public LiveData<Recipe> getRecipe() {
         return mRecipe;
+    }
+
+    public LiveData<Boolean> isRecipeTimeOut() {
+        return mRecipeTimeOut;
     }
 
     public void searchRecipesApi(String query, int pageNumber) {
@@ -63,6 +70,7 @@ public class ApiClient {
             @Override
             public void run() {
                 // Timeout network
+                mRecipeTimeOut.postValue(true);
                 handler.cancel(true);
             }
         }, Constants.TIMEOUT_LIMIT, TimeUnit.MILLISECONDS);
@@ -129,10 +137,12 @@ public class ApiClient {
 
         final Future handler = AppExecutors.getInstance().getNetworkIO().submit(mRetrieveRecipeRunnable);
 
+        mRecipeTimeOut.setValue(false);
         AppExecutors.getInstance().getNetworkIO().schedule(new Runnable() {
             @Override
             public void run() {
                 // Timeout network
+                mRecipeTimeOut.postValue(true);
                 handler.cancel(true);
             }
         }, Constants.TIMEOUT_LIMIT, TimeUnit.MILLISECONDS);
