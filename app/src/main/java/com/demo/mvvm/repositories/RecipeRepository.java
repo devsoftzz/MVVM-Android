@@ -28,6 +28,9 @@ public class RecipeRepository {
     public LiveData<List<Recipe>> getRecipes() {
         return mApiClient.getRecipes();
     }
+    public LiveData<Recipe> getRecipe() {
+        return mApiClient.getRecipe();
+    }
 
     public void searchRecipeApi(String query, int pageNumber) {
         if (pageNumber == 0) {
@@ -36,6 +39,10 @@ public class RecipeRepository {
         mQuery = query;
         mPageNumber = pageNumber;
         mApiClient.searchRecipesApi(query, pageNumber);
+    }
+
+    public void RecipeApi(String recipeId) {
+        mApiClient.RecipeApi(recipeId);
     }
 
     public void searchNextPage(){
